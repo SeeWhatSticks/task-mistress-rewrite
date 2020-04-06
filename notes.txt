@@ -1,0 +1,62 @@
+# Data
+
+## game
+verifyChannel [channel_id]
+begInterval [integer]
+treatInterval [integer]
+seasonNumber [integer]
+seasonBegin [integer]
+pastWinners [dict: season_number]
+    score [integer]
+    winners [list: user_id]
+categories [dict: category_id]
+    symbol [string]
+    emoji [string]
+    name [string]
+
+## players [dict: user_id]
+available [boolean]
+limits [list: category_id]
+limitMessage [message_id]
+tasks [dict: task_id]
+    verificationMessage [message_id]
+    completed [boolean]
+    verifiers [list: user_id]
+
+## tasks [dict: task_id]
+creator [user_id]
+categories [list: category_id]
+categoryMessage [message_id]
+text [string]
+ratings [dict: user_id]
+    value [value]
+deleted [boolean]
+
+
+# Commands
+```
+!beg                    Provides a task, if allowed.
+!treat [user] <task>    Gives a task to someone else.
+!list                   View the tasks assigned to you.
+
+!verify                 Provides an interface for other users to verify a task.
+
+!limits                 Provides an interface for setting limits.
+
+!create                 Lists the tasks you have created.
+!create add [desc.]     Adds a task the user creates, and provides an interface for setting categories.
+!create edit [task]     Provides an interface for setting categories.
+!create delete [task]   Deletes a task you have created.
+
+!begin                  Resets player task lists and begins a new game.
+
+!set verify_channel
+!set spam_channel
+!set beg_interval [value]
+!set treat_interval [value]
+!set task_text [id] [text]
+
+!dump                   Dump data to the console.
+!die                    Quit.
+!end                    Save data and quit.
+```

@@ -1,0 +1,145 @@
+{
+    "verifyChannel": null,
+    "botspamChannel": null,
+    "begInterval": 86400,
+    "treatInterval": 21600,
+    "seasonNumber": 0,
+    "seasonBegin": null,
+    "pastWinners": {
+    },
+    "lastCategoryPage": 4,
+    "categories": {
+        "vaginal_stimulation": {
+            "page": 0,
+            "symbol": "\ud83c\udf51",
+            "emoji": ":peach:",
+            "name": "Vaginal stimulation"
+        },
+        "penile_stimulation": {
+            "page": 0,
+            "symbol": "\ud83c\udf46",
+            "emoji": ":eggplant:",
+            "name": "Penile stimulation"
+        },
+        "nipple_stimulation": {
+            "page": 0,
+            "symbol": "\ud83c\udf52",
+            "emoji": ":cherries:",
+            "name": "Nipple stimulation"
+        },
+        "anal_stimulation": {
+            "page": 0,
+            "symbol": "\ud83e\uddf4",
+            "emoji": ":squeeze_bottle:",
+            "name": "Anal stimulation"
+        },
+        "genital_torture": {
+            "page": 0,
+            "symbol": "\ud83d\udddc\ufe0f",
+            "emoji": ":compression:",
+            "name": "Genital Torture"
+        },
+        "orgasm_control": {
+            "page": 0,
+            "symbol": "\ud83d\udebf",
+            "emoji": ":shower:",
+            "name": "Orgasm control"
+        },
+        "bondage": {
+            "page": 1,
+            "symbol": "\u26d3\ufe0f",
+            "emoji": ":chains:",
+            "name": "Bondage"
+        },
+        "discipline": {
+            "page": 1,
+            "symbol": "\ud83e\uddce",
+            "emoji": ":person_kneeling:",
+            "name": "Discipline"
+        },
+        "impact_play": {
+            "page": 1,
+            "symbol": "\ud83c\udfd3",
+            "emoji": ":ping_pong:",
+            "name": "Impact play"
+        },
+        "pain": {
+            "page": 1,
+            "symbol": "\ud83d\ude23",
+            "emoji": ":persevere:",
+            "name": "Pain"
+        },
+        "gags": {
+            "page": 2,
+            "symbol": "\ud83d\udca6",
+            "emoji": ":sweat_drops:",
+            "name": "Enemas"
+        },
+        "blindfolds": {
+            "page": 2,
+            "symbol": "\ud83d\ude0e",
+            "emoji": ":sunglasses:",
+            "name": "Blindfolds"
+        },
+        "sounding": {
+            "page": 2,
+            "symbol": "\ud83e\uddaf",
+            "emoji": ":probing_cane:",
+            "name": "Sounding"
+        },
+        "e-stim": {
+            "page": 2,
+            "symbol": "\u26a1",
+            "emoji": ":zap:",
+            "name": "E-Stim"
+        },
+        "exhibitionism": {
+            "page": 3,
+            "symbol": "\ud83d\udcf7",
+            "emoji": ":camera:",
+            "name": "Exhibitionism"
+        },
+        "humiliation": {
+            "page": 3,
+            "symbol": "\ud83d\ude0a",
+            "emoji": ":blush:",
+            "name": "Humiliation"
+        },
+        "sissification": {
+            "page": 3,
+            "symbol": "\ud83d\udc57",
+            "emoji": ":dress:",
+            "name": "Sissification"
+        },
+        "infantilism": {
+            "page": 3,
+            "symbol": "\ud83c\udf7c",
+            "emoji": ":baby_bottle:",
+            "name": "Infantilism"
+        },
+        "creativity": {
+            "page": 4,
+            "symbol": "\ud83c\udfa8",
+            "emoji": ":art:",
+            "name": "Creativity"
+        },
+        "games": {
+            "page": 4,
+            "symbol": "\ud83c\udfae",
+            "emoji": ":video_game:",
+            "name": "Games"
+        },
+        "choices": {
+            "page": 4,
+            "symbol": "\ud83d\udd20",
+            "emoji": ":capital_abcd:",
+            "name": "Choices"
+        },
+        "writing": {
+            "page": 4,
+            "symbol": "\u270d\ufe0f",
+            "emoji": ":writing_hand:",
+            "name": "Writing"
+        }
+    }
+}
