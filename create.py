@@ -10,17 +10,18 @@ class Create(commands.Cog):
         task = self.bot.tasks[task_id]
         embed = Embed(
             title='Set categories',
-            description='Categories for {}: "{}" by {}'.format(
-                task_id,
-                task['text'],
-                player_name),
-            color=0x6666ee)
+            description='Categories for {} ({}): "{}" by {}'.format(
+                    task['name'],
+                    task_id,
+                    task['text'],
+                    player_name),
+            color=self.bot.COLORS['set'])
         categories = self.bot.game['categories']
         for item in task['categories']:
             embed.add_field(
-                name=categories[item]['symbol'],
-                value=categories[item]['name'],
-                inline=True)
+                    name=categories[item]['symbol'],
+                    value=categories[item]['name'],
+                    inline=True)
         return embed
 
     @commands.Cog.listener()
@@ -49,35 +50,42 @@ class Create(commands.Cog):
                 await message.edit(embed=self.categories_embed(
                         interface['task_id'],
                         user.mention))
+        self.bot.save_data()
 
     @commands.group()
+    @commands.guild_only()
     async def create(self, ctx):
         """Lists any tasks you have created."""
         if ctx.invoked_subcommand is None:
             player_tasks = {k: v for (k, v) in self.bot.tasks.items() if v['creator'] == ctx.author.id}
             embed = Embed(
-                title='Task list',
-                description='Showing {} tasks written by {}:'.format(len(player_tasks), ctx.author.name),
-                color=0x6666ee)
+                    title='Task list',
+                    description='Showing {} tasks written by {}:'.format(len(player_tasks), ctx.author.name),
+                    color=self.bot.COLORS['default'])
             for key in player_tasks.keys():
                 task = self.bot.tasks[key]
                 embed.add_field(
-                    name=str(key)+" "+", ".join([self.bot.game['categories'][x]['symbol'] for x in task['categories']]),
-                    value=task['text'],
-                    inline=True)
+                        name="{} ({}) {}".format(
+                                task['name'],
+                                str(key),
+                                "".join([self.bot.game['categories'][x]['symbol'] for x in task['categories']])),
+                        value=task['text'],
+                        inline=False)
             await ctx.channel.send(embed=embed)
+        self.bot.save_data()
 
-    @create.command()
-    async def add(self, ctx, *, text):
+    @create.command(usage='task_text...')
+    async def new(self, ctx, *, task_text):
         """Allows you to create a new task."""
         user = ctx.author
-        task_id = int(user.discriminator+str(randrange(1000)))
+        task_id = 0
         while task_id in self.bot.tasks:
-            task_id = int(user.discriminator+str(randrange(1000)))
+            task_id += 1
         self.bot.tasks[task_id] = {
             'creator': user.id,
+            'name': "New Task",
             'categories': [],
-            'text': text,
+            'text': task_text,
             'ratings': {},
             'deleted': False
         }
@@ -88,26 +96,52 @@ class Create(commands.Cog):
             'task_id': task_id,
             'page': 0}
         await self.bot.add_category_reactions(message)
+        self.bot.save_data()
 
-    @create.command(usage='<task id>')
-    async def edit(self, ctx, task_id: int):
-        """Edit categories for a task you wrote."""
+    @create.command(usage='task_id task_name...')
+    async def name(self, ctx, task_id: int, *, name):
+        """Change the name of a task you wrote."""
         user = ctx.author
         try:
             task = self.bot.tasks[task_id]
         except KeyError:
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
-                "No task found with that ID."))
+                    user.display_name,
+                    "No task found with that ID."))
             return
         if task['creator'] != user.id:
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
-                "That is not your task."))
+                    user.display_name,
+                    "That is not your task."))
         if task['deleted']:
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
-                "That task has been deleted."))
+                    user.display_name,
+                    "That task has been deleted."))
+        task['name'] = name
+        await ctx.channel.send(embed=self.bot.confirm_embed(
+                user.display_name,
+                "Task renamed successfully."))
+        self.bot.save_data()
+
+    @create.command(aliases=['cat'], usage='task_id')
+    async def categories(self, ctx, task_id: int):
+        """Change categories for a task you wrote."""
+        user = ctx.author
+        try:
+            task = self.bot.tasks[task_id]
+        except KeyError:
+            await ctx.channel.send(embed=self.bot.error_embed(
+                    user.display_name,
+                    "No task found with that ID."))
+            return
+        if task['creator'] != user.id:
+            await ctx.channel.send(embed=self.bot.error_embed(
+                    user.display_name,
+                    "That is not your task."))
+        if task['deleted']:
+            await ctx.channel.send(embed=self.bot.error_embed(
+                    user.display_name,
+                    "That task has been deleted."))
         message = await ctx.channel.send(embed=self.categories_embed(task_id, user.mention))
         self.bot.interfaces[message.id] = {
             'type': 'categories',
@@ -115,8 +149,9 @@ class Create(commands.Cog):
             'task_id': task_id,
             'page': 0}
         await self.bot.add_category_reactions(message)
+        self.bot.save_data()
 
-    @create.command(usage='<task id>')
+    @create.command(aliases=['del'], usage='task_id')
     async def delete(self, ctx, task_id: int):
         """Delete a task you wrote."""
         user = ctx.author
@@ -124,21 +159,22 @@ class Create(commands.Cog):
             task = self.bot.tasks[task_id]
         except KeyError:
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
-                "No task found with that ID."))
+                    user.display_name,
+                    "No task found with that ID."))
             return
         if task['creator'] != user.id:
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
-                "That is not your task."))
+                    user.display_name,
+                    "That is not your task."))
         if task['deleted']:
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
-                "That task has been deleted."))
+                    user.display_name,
+                    "That task has been deleted."))
         task['deleted'] = True
         await ctx.channel.send(embed=self.bot.confirm_embed(
-            user.name,
-            "The task was deleted."))
+                user.display_name,
+                "The task was deleted."))
+        self.bot.save_data()
 
 def setup(bot):
     bot.add_cog(Create(bot))

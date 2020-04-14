@@ -8,23 +8,25 @@ class Verify(commands.Cog):
     def verification_embed(self, task_id, player_id, player_name, verifiers):
         task = self.bot.tasks[task_id]
         embed = Embed(
-            title="Verify task completion",
-            description='Task {}: "{}" completed by {}'.format(
-                task_id,
-                self.bot.tasks[task_id]['text'],
-                player_name),
-            color=0x99ee99)
-        if player_id in task['ratings']:
+                title="Verify task completion",
+                description='{} ({}): "{}"'.format(
+                        task['name'],
+                        task_id,
+                        task['text']),
+                color=self.bot.COLORS['verify'])
+        for verifier in verifiers:
             embed.add_field(
-                name="Rated by {}".format(player_name),
-                value=task['ratings'][player_id],
-                inline=False)
-        if len(verifiers) is not 0:
-            embed.add_field(
-                name="Verified by:",
-                value=", ".join(verifiers),
-                inline=False
+                    name="Verified by:",
+                    value=verifier,
+                    inline=False
             )
+        if player_id in task['ratings']:
+            embed.set_footer(text="Rated {} for severity by {}".format(
+                        task['ratings'][player_id],
+                        player_name))
+        else:
+            embed.set_footer(text="Not yet rated by {}".format(
+                    player_name))
         return embed
 
     @commands.Cog.listener()
@@ -47,6 +49,8 @@ class Verify(commands.Cog):
             if event.emoji.name in self.bot.NUMBER_BUTTONS:
                 task = self.bot.tasks[interface['task_id']]
                 task['ratings'][user.id] = self.bot.NUMBER_BUTTONS[event.emoji.name]
+                await message.clear_reactions()
+                await message.add_reaction(self.bot.CHECK_MARK_BUTTONS)
         else:
             # The player may click the check mark
             if event.emoji.name == self.bot.CHECK_MARK_BUTTONS:
@@ -55,51 +59,53 @@ class Verify(commands.Cog):
         verifier_names = []
         for verifier_id in player['tasks'][interface['task_id']]['verifiers']:
             verifier = await self.bot.fetch_user(verifier_id)
-            verifier_names.append(verifier.name)
+            verifier_names.append(verifier.display_name)
         await message.edit(embed=self.verification_embed(
                 interface['task_id'],
                 interface['player_id'],
-                self.bot.get_user(interface['player_id']).name,
+                self.bot.get_user(interface['player_id']).display_name,
                 verifier_names))
+        self.bot.save_data()
 
-    @commands.command()
+    @commands.command(usage='task_id')
     async def verify(self, ctx, task_id: int):
         """Request that other players verify the completion of a task."""
         user = ctx.author
         if ctx.channel.id != self.bot.game['verifyChannel']:
             await ctx.channel.send(embed=self.bot.error_embed(
-                    user.name,
+                    user.display_name,
                     "You must verify task completion in the #verification channel."))
             return
         if task_id not in self.bot.tasks:
             await ctx.channel.send(embed=self.bot.error_embed(
-                    user.name,
+                    user.display_name,
                     "Couldn't find a task with that ID."))
             return
         player = self.bot.get_player_data(user.id)
         if task_id not in player['tasks']:
             await ctx.channel.send(embed=self.bot.error_embed(
-                    user.name,
+                    user.display_name,
                     "You haven't been assigned that task."))
             return
         if player['tasks'][task_id]['completed']:
             await ctx.channel.send(embed=self.bot.error_embed(
-                    user.name,
+                    user.display_name,
                     "You have already completed that task."))
             return
         player['tasks'][task_id]['completed'] = True
         message = await ctx.channel.send(embed=self.verification_embed(
                 task_id,
                 user.id,
-                user.name,
+                user.display_name,
                 []))
         self.bot.interfaces[message.id] = {
             'type': 'verification',
             'player_id': user.id,
             'task_id': task_id}
         await message.add_reaction(self.bot.CHECK_MARK_BUTTONS)
-        for medal in self.bot.NUMBER_BUTTONS.keys():
-            await message.add_reaction(medal)
+        for button in self.bot.NUMBER_BUTTONS.keys():
+            await message.add_reaction(button)
+        self.bot.save_data()
 
 def setup(bot):
     bot.add_cog(Verify(bot))

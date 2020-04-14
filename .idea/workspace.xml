@@ -2,9 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e4a643a4-5e7a-46c6-8a71-415bbc2c8619" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blanks/game.json" beforeDir="false" afterPath="$PROJECT_DIR$/blanks/game.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blanks/tasks.json" beforeDir="false" afterPath="$PROJECT_DIR$/blanks/tasks.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create.py" beforeDir="false" afterPath="$PROJECT_DIR$/create.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/interfaces.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play.py" beforeDir="false" afterPath="$PROJECT_DIR$/play.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/players.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/set.py" beforeDir="false" afterPath="$PROJECT_DIR$/set.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/verify.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,14 +42,18 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="file.status.colors" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Steven\Documents\python\task-mistress-rewrite\data" />
+      <recent name="C:\Users\Steven\Documents\python\task-mistress-rewrite" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Steven\Documents\python\task-mistress-rewrite" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="task-mistress-rewrite" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -61,9 +75,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="scratch" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="task-mistress-rewrite" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.scratch" />
       </list>
     </recent_temporary>
   </component>
@@ -81,33 +117,37 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1348" height="227" key="GridCell.Tab.0.bottom" timestamp="1586258446920">
+    <state x="465" y="191" key="FileChooserDialogImpl" timestamp="1586610513137">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state width="1348" height="227" key="GridCell.Tab.0.bottom/0.0.1368.872@0.0.1368.872" timestamp="1586258446920" />
-    <state width="1348" height="227" key="GridCell.Tab.0.center" timestamp="1586258446919">
+    <state x="465" y="191" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1586610513137" />
+    <state width="1348" height="241" key="GridCell.Tab.0.bottom" timestamp="1586847033270">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state width="1348" height="227" key="GridCell.Tab.0.center/0.0.1368.872@0.0.1368.872" timestamp="1586258446919" />
-    <state width="1348" height="227" key="GridCell.Tab.0.left" timestamp="1586258446919">
+    <state width="1348" height="241" key="GridCell.Tab.0.bottom/0.0.1368.872@0.0.1368.872" timestamp="1586847033270" />
+    <state width="1348" height="241" key="GridCell.Tab.0.center" timestamp="1586847033270">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state width="1348" height="227" key="GridCell.Tab.0.left/0.0.1368.872@0.0.1368.872" timestamp="1586258446919" />
-    <state width="1348" height="227" key="GridCell.Tab.0.right" timestamp="1586258446919">
+    <state width="1348" height="241" key="GridCell.Tab.0.center/0.0.1368.872@0.0.1368.872" timestamp="1586847033270" />
+    <state width="1348" height="241" key="GridCell.Tab.0.left" timestamp="1586847033270">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state width="1348" height="227" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1586258446919" />
-    <state x="186" y="79" key="SettingsEditor" timestamp="1582887713885">
+    <state width="1348" height="241" key="GridCell.Tab.0.left/0.0.1368.872@0.0.1368.872" timestamp="1586847033270" />
+    <state width="1348" height="241" key="GridCell.Tab.0.right" timestamp="1586847033270">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="186" y="79" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1582887713885" />
+    <state width="1348" height="241" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1586847033270" />
+    <state x="186" y="79" key="SettingsEditor" timestamp="1586259490021">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="186" y="79" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1586259490021" />
     <state x="380" y="260" key="com.intellij.ide.util.TipDialog" timestamp="1583477332691">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="380" y="260" key="com.intellij.ide.util.TipDialog/0.0.1368.872@0.0.1368.872" timestamp="1583477332691" />
-    <state x="350" y="187" width="672" height="678" key="search.everywhere.popup" timestamp="1583528133796">
+    <state x="354" y="191" width="672" height="678" key="search.everywhere.popup" timestamp="1586374502307">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="350" y="187" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1583528133796" />
+    <state x="354" y="191" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1586374502307" />
   </component>
 </project>

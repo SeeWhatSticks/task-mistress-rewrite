@@ -1,9 +1,8 @@
 {
     "verifyChannel": null,
-    "botspamChannel": null,
     "begInterval": 86400,
     "treatInterval": 21600,
-    "seasonNumber": 0,
+    "seasonNumber": null,
     "seasonBegin": null,
     "pastWinners": {
     },

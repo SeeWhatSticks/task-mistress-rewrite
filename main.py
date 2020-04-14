@@ -20,23 +20,30 @@ bot.NUMBER_BUTTONS = {
 }
 bot.BKWD_ARROW = "◀️"
 bot.FRWD_ARROW = "▶️"
+bot.COLORS = {
+    'default': 0x3300cc,
+    'set': 0x003399,
+    'verify': 0xff3399,
+    'confirm': 0x33ff33,
+    'error': 0xff3333
+}
 
-with open('game.json', 'r', encoding='utf8') as file:
+with open('data/game.json', 'r', encoding='utf8') as file:
     bot.game = json.load(file)
 
-with open('tasks.json', 'r', encoding='utf8') as file:
+with open('data/tasks.json', 'r', encoding='utf8') as file:
     bot.tasks = json.load(file)
     bot.tasks = {int(k): v for (k, v) in bot.tasks.items()}
     for task in bot.tasks.values():
         task['ratings'] = {int(k): v for (k, v) in task['ratings'].items()}
 
-with open('players.json', 'r', encoding='utf8') as file:
+with open('data/players.json', 'r', encoding='utf8') as file:
     bot.players = json.load(file)
     bot.players = {int(k): v for (k, v) in bot.players.items()}
     for player in bot.players.values():
         player['tasks'] = {int(k): v for (k, v) in player['tasks'].items()}
 
-with open('interfaces.json', 'r', encoding='utf8') as file:
+with open('data/interfaces.json', 'r', encoding='utf8') as file:
     bot.interfaces = json.load(file)
     bot.interfaces = {int(k): v for (k, v) in bot.interfaces.items()}
 
@@ -49,6 +56,8 @@ def get_player_data(self, user_id):
             'lastTreatTime': None,
             'limits': []
         }
+        for key in self.game['categories'].keys():
+            bot.players[user_id]['limits'].append(key)
     return bot.players[user_id]
 bot.get_player_data = MethodType(get_player_data, bot)
 
@@ -66,14 +75,14 @@ def confirm_embed(name, confirm_string):
     return Embed(
             title='Confirmation for {}'.format(name),
             description=confirm_string,
-            color=0x66ee66)
+            color=bot.COLORS['confirm'])
 bot.confirm_embed = confirm_embed
 
 def error_embed(name, error_string):
     return Embed(
             title='Error for {}'.format(name),
             description=error_string,
-            color=0xee6666)
+            color=bot.COLORS['error'])
 bot.error_embed = error_embed
 
 def calculate_severity(task):
@@ -86,15 +95,21 @@ def calculate_score(player):
     return sum([calculate_severity(bot.tasks[v]) for v in completed_tasks])
 
 def save_data(self):
-    with open('game.json', 'w+') as file:
+    with open('data/game.json', 'w+') as file:
         file.write(json.dumps(self.game, indent=4))
-    with open('tasks.json', 'w+') as file:
+    with open('data/tasks.json', 'w+') as file:
         file.write(json.dumps(self.tasks, indent=4))
-    with open('players.json', 'w+') as file:
+    with open('data/players.json', 'w+') as file:
         file.write(json.dumps(self.players, indent=4))
-    with open('interfaces.json', 'w+') as file:
+    with open('data/interfaces.json', 'w+') as file:
         file.write(json.dumps(self.interfaces, indent=4))
-bot.add_category_reactions = MethodType(save_data, bot)
+bot.save_data = MethodType(save_data, bot)
+
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.channel.send(embed=ctx.bot.error_embed(
+            ctx.author.display_name,
+            str(error)))
 
 @bot.event
 async def on_ready():
@@ -147,14 +162,14 @@ async def begin(ctx):
         embed = Embed(
                 title="Winners",
                 description='Winners for season {}'.format(season_number),
-                color=0x99ee99)
+                color=bot.COLORS['default'])
         embed.add_field(
                 name='With {} points'.format(top),
                 value=", ".join([winner.mention for winner in winners.values()]),
                 inline=False)
         await ctx.channel.send(embed=embed)
     await ctx.channel.send(embed=confirm_embed(
-            user.name,
+            user.display_name,
             "Scores and tasks have been reset, a new game has started!"))
     bot.game['seasonBegin'] = datetime.now().timestamp()
     # Reset player data
@@ -164,25 +179,8 @@ async def begin(ctx):
         player['lastBegTime'] = None
         player['lastTreatTime'] = None
     bot.interfaces = {k: v for (k, v) in bot.interfaces.items() if v['type'] is not 'verification'}
+    ctx.bot.save_data()
 
-@bot.command(hidden=True)
-@commands.has_role("Administrator")
-async def dump(ctx):
-    print("game:")
-    print(bot.game)
-    print("---")
-    print("players:")
-    print(bot.players)
-    print("---")
-    print("tasks:")
-    print(bot.tasks)
-    print("---")
-    print("interfaces:")
-    print(bot.interfaces)
-@bot.command(hidden=True)
-@commands.has_role("Administrator")
-async def die(ctx):
-    await bot.close()
 @bot.command(hidden=True)
 @commands.has_role("Administrator")
 async def end(ctx):

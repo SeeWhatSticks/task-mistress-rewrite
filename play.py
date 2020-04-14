@@ -1,19 +1,20 @@
 from random import choice
 from datetime import datetime
 import typing
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord import Embed, Member
 
 class Play(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        # self.distribute_tasks.start()
 
     def limits_embed(self, player_id, player_name):
         player = self.bot.get_player_data(player_id)
         embed = Embed(
             title='Set limits',
             description='Limits for {}'.format(player_name),
-            color=0x6666ee)
+            color=self.bot.COLORS['set'])
         categories = self.bot.game['categories']
         for item in player['limits']:
             embed.add_field(
@@ -25,9 +26,9 @@ class Play(commands.Cog):
     def assignment_embed(self, task_id, player_name):
         task = self.bot.tasks[task_id]
         embed = Embed(
-            title='Task assigned to {}'.format(player_name),
-            description='Task {}: "{}"'.format(task_id, task['text']),
-            color=0x993399)
+            title='{} assigned to {}'.format(task['name'], player_name),
+            description='Task ID {}: "{}"'.format(task_id, task['text']),
+            color=self.bot.COLORS['default'])
         categories = self.bot.game['categories']
         for item in task['categories']:
             embed.add_field(
@@ -41,6 +42,10 @@ class Play(commands.Cog):
                 if not v['deleted']
                 if k not in player['tasks']
                 if not any(item in player['limits'] for item in v['categories'])]
+
+    # @tasks.loop(hours=1.0)
+    # async def distribute_tasks(self):
+    #     pass
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, event):
@@ -68,9 +73,11 @@ class Play(commands.Cog):
                 await message.edit(embed=self.limits_embed(
                         user.id,
                         user.mention))
+        self.bot.save_data()
 
-    @commands.command()
-    async def available(self, ctx, b: bool):
+    @commands.command(usage='[true|false]')
+    @commands.guild_only()
+    async def available(self, ctx, b: typing.Optional[bool]):
         """Marks you as available for additional tasks."""
         user = ctx.author
         player = self.bot.get_player_data(user.id)
@@ -80,84 +87,94 @@ class Play(commands.Cog):
             player['available'] = b
         if player['available']:
             await ctx.channel.send(embed=self.bot.confirm_embed(
-                    user.name,
+                    user.display_name,
                     "You have been marked as available."))
         else:
             await ctx.channel.send(embed=self.bot.confirm_embed(
-                    user.name,
+                    user.display_name,
                     "You have been marked as unavailable."))
+        self.bot.save_data()
 
     @commands.command()
+    @commands.guild_only()
     async def beg(self, ctx):
         """Provides a task to the supplicant, if allowed."""
         user = ctx.author
         player = self.bot.get_player_data(user.id)
         if len(player['limits']) == 0:
             await ctx.channel.send(embed=self.bot.error_embed(
-                    user.name,
+                    user.display_name,
                     "You don't have any limits set. Consider using the !limits command to set them."))
         if (player['lastBegTime'] is not None and
                 datetime.now().timestamp() < player['lastBegTime'] + self.bot.game['begInterval']):
             await ctx.channel.send(embed=self.bot.error_embed(
-                    user.name,
+                    user.display_name,
                     "You haven't earned another task yet. You need to learn patience."))
             return
         options = self.get_options_for(player)
         if len(options) == 0:
             await ctx.channel.send(embed=self.bot.error_embed(
-                    user.name,
+                    user.display_name,
                     "There are no valid tasks for you. Consider relaxing your limits."))
             return
         task_key = choice(options)
         player['tasks'][task_key] = {
+            'assignedBy': user.id,
             'completed': False,
             'verifiers': []
         }
-        message = await ctx.channel.send(embed=self.assignment_embed(task_key, user.name))
+        message = await ctx.channel.send(embed=self.assignment_embed(task_key, user.display_name))
         player['lastBegTime'] = message.created_at.timestamp()
+        self.bot.save_data()
 
-    @commands.command()
-    async def treat(self, ctx, target: Member, task_id: typing.Optional[int]):
+    @commands.command(usage='member <task_id>')
+    @commands.guild_only()
+    async def assign(self, ctx, target: Member, task_id: typing.Optional[int]):
         """Give a task to someone else."""
         user = ctx.author
         user_player = self.bot.get_player_data(user.id)
         target_player = self.bot.get_player_data(target.id)
         if not target_player['available']:
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
+                user.display_name,
                 "That player is not available for additional tasks."))
             return
         if (user_player['lastTreatTime'] is not None and
                 datetime.now().timestamp() < user_player['lastTreatTime'] + self.bot.game['treatInterval']):
             await ctx.channel.send(embed=self.bot.error_embed(
-                user.name,
+                user.display_name,
                 "Not enough time has passed since you were last so gracious."))
             return
         if task_id is None:
             options = self.get_options_for(target_player)
             if len(options) == 0:
                 await ctx.channel.send(embed=self.bot.error_embed(
-                        user.name,
+                        user.display_name,
                         "There are no valid tasks for that player."))
                 return
             task_id = choice(options)
         else:
             if task_id not in self.bot.tasks:
                 await ctx.channel.send(embed=self.bot.error_embed(
-                        user.name,
+                        user.display_name,
                         "There is no task by the specified ID."))
                 return
             task = self.bot.tasks[task_id]
             if any(item in target_player['limits'] for item in task['categories']):
                 await ctx.channel.send(embed=self.bot.error_embed(
-                        user.name,
+                        user.display_name,
                         "The task you selected breaks that player's limits."))
-        message = await ctx.channel.send(embed=self.assignment_embed(
-                task_id,
-                target.name))
+        target_player['tasks'][task_id] = {
+            'assignedBy': user.id,
+            'completed': False,
+            'verifiers': []
+        }
+        message = await ctx.channel.send(embed=self.assignment_embed(task_id, target.name))
         user_player['lastTreatTime'] = message.created_at.timestamp()
+        self.bot.save_data()
 
     @commands.command()
+    @commands.guild_only()
     async def limits(self, ctx):
         """Lists your limits and allows you to edit them."""
         user = ctx.author
@@ -169,8 +186,10 @@ class Play(commands.Cog):
             'player_id': user.id,
             'page': 0}
         await self.bot.add_category_reactions(message)
+        self.bot.save_data()
 
     @commands.command()
+    @commands.guild_only()
     async def list(self, ctx):
         """Lists incomplete tasks assigned to you."""
         user = ctx.author
@@ -178,12 +197,15 @@ class Play(commands.Cog):
         player_tasks = {k: v for (k, v) in player['tasks'].items() if not v['completed']}
         embed = Embed(
                 title='Task list',
-                description='Showing {} tasks assigned to {}:'.format(len(player_tasks), user.name),
-                color=0x6666ee)
+                description='Showing {} tasks assigned to {}:'.format(len(player_tasks), user.display_name),
+                color=self.bot.COLORS['default'])
         for key in player_tasks.keys():
             task = self.bot.tasks[key]
             embed.add_field(
-                    name=str(key)+" "+", ".join([self.bot.game['categories'][x]['symbol'] for x in task['categories']]),
+                    name="{} ({}) {}".format(
+                            task['name'],
+                            str(key),
+                            "".join([self.bot.game['categories'][x]['symbol'] for x in task['categories']])),
                     value=task['text'],
                     inline=True)
         await ctx.channel.send(embed=embed)
