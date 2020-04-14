@@ -4,7 +4,7 @@ from types import MethodType
 from discord import Embed
 from discord.ext import commands
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='$')
 bot.load_extension('play')
 bot.load_extension('verify')
 bot.load_extension('create')
